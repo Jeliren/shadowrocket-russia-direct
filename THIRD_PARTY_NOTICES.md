@@ -1,7 +1,11 @@
 # Third-party notices
 
-The generated `direct-curated.list` incorporates domain data from the following
-MIT-licensed projects.
+The generated `direct-curated.list` incorporates public website addresses from
+the Bank of Russia and domain data from the following MIT-licensed projects.
+
+## Bank of Russia
+
+Source: https://www.cbr.ru/banking_sector/credit/cowebsites/
 
 ## v2fly/domain-list-community
 
@@ -34,3 +38,15 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
+
+## OISD Small
+
+`adblock.list` is a transformed Shadowrocket-format version of OISD Small.
+
+Copyright: Stephan van Ruth and OISD contributors
+
+Source: https://oisd.nl/
+
+License: GNU General Public License v3.0. The complete license text is in
+`LICENSES/OISD-GPL-3.0.txt`. The transformation source is
+`scripts/build_shadowrocket_rules.py`.

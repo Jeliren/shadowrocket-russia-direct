@@ -1,0 +1,3 @@
+# Personal PROXY overrides. One rule per line.
+# This list has the highest routing priority and is updated centrally.
+# Add a domain here when it must use VPN despite appearing in a DIRECT source.

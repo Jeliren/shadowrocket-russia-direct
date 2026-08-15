@@ -33,5 +33,7 @@
   "external_shadowrocket_lists": [
     "https://raw.githubusercontent.com/haritos90/allow-domains/main/Russia/russia-outside-surge.list"
   ],
-  "external_domain_lists": []
+  "external_domain_lists": [],
+  "cbr_websites_url": "https://www.cbr.ru/banking_sector/credit/cowebsites/",
+  "oisd_small_url": "https://small.oisd.nl/"
 }

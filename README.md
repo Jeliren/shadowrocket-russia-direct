@@ -6,10 +6,10 @@
   транспорт, медицина и другие сервисы, чувствительные к VPN/IP дата-центров,
   идут `DIRECT` через обычное подключение телефона;
 - Reddit идёт `DIRECT` как подтверждённое персональное исключение;
+- умеренный список OISD Small блокирует рекламные домены без расшифровки HTTPS;
 - весь остальной трафик идёт через выбранный в Shadowrocket узел (`PROXY`).
 
-В профиле нет VPN-пароля, прокси-сервера, скриптов, HTTPS MITM, блокировки
-рекламы или URL rewrite.
+В профиле нет VPN-пароля, прокси-сервера, скриптов, HTTPS MITM или URL rewrite.
 
 ## Установка
 
@@ -29,14 +29,17 @@ Background Update и системный iOS Background App Refresh. iOS не г�
 
 ## Как обновляются правила
 
-`profile.conf` ссылается на два удалённых RULE-SET:
+`profile.conf` ссылается на четыре удалённых RULE-SET:
 
+- `proxy-custom.list` — принудительный VPN поверх DIRECT-источников;
 - `direct-custom.list` — ручные срочные исключения;
+- `adblock.list` — OISD Small в формате Shadowrocket;
 - `direct-curated.list` — автоматически собираемый публичный набор.
 
 GitHub Actions ежедневно пересобирает агрегат из выбранных категорий
 `v2fly/domain-list-community` и
-`haritos90/allow-domains/Russia/russia-outside-surge.list`. Точный перечень
+`haritos90/allow-domains/Russia/russia-outside-surge.list`, официального
+перечня банковских сайтов ЦБ РФ и OISD Small. Точный перечень источников и
 категорий находится в `sources.json`.
 
 ## Добавление проблемного сайта
@@ -50,12 +53,20 @@ GitHub Actions ежедневно пересобирает агрегат из �
 `.ru`: среди российских доменов есть ресурсы, которым, наоборот, требуется
 прокси.
 
+Если сервис должен принудительно использовать VPN вопреки DIRECT-источнику,
+добавьте его в `proxy-custom.list`. Если рекламная фильтрация дала ложное
+срабатывание, добавьте домен в `direct-custom.list`: ручное разрешение имеет
+приоритет над `adblock.list`.
+
 ## Источники и лицензии
 
-Сборка использует MIT-лицензированные данные:
+DIRECT-сборка использует официальный публичный перечень Банка России и
+MIT-лицензированные данные:
 
 - [v2fly/domain-list-community](https://github.com/v2fly/domain-list-community);
 - [haritos90/allow-domains](https://github.com/haritos90/allow-domains).
 
 Атрибуция находится в `THIRD_PARTY_NOTICES.md`. Готовые сторонние конфиги
-целиком не подключаются.
+целиком не подключаются. `adblock.list` является преобразованной версией OISD
+Small и распространяется по GPL-3.0; текст лицензии находится в
+`LICENSES/OISD-GPL-3.0.txt`.

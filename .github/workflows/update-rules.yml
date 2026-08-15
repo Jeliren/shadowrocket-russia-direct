@@ -20,17 +20,17 @@ jobs:
       - uses: actions/setup-python@v7
         with:
           python-version: "3.x"
-      - name: Rebuild rule-set
+      - name: Rebuild rule-sets
         run: python3 scripts/build_shadowrocket_rules.py
       - name: Commit changes
         shell: bash
         run: |
-          if git diff --quiet -- direct-curated.list; then
+          if git diff --quiet -- direct-curated.list adblock.list; then
             echo "No rule changes"
             exit 0
           fi
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add direct-curated.list
-          git commit -m "Update curated rules"
+          git add direct-curated.list adblock.list
+          git commit -m "Update generated rules"
           git push
