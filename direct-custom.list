@@ -1,0 +1,12 @@
+# Personal DIRECT overrides. One rule per line.
+# This file is deliberately small and is the normal place for urgent additions.
+
+# Reddit works from the user's ISP but fails through the current VPS/datacenter IP.
+DOMAIN-SUFFIX,reddit.com
+DOMAIN-SUFFIX,redd.it
+DOMAIN-SUFFIX,redditinc.com
+DOMAIN-SUFFIX,redditmail.com
+DOMAIN-SUFFIX,redditmedia.com
+DOMAIN-SUFFIX,redditspace.com
+DOMAIN-SUFFIX,redditstatic.com
+DOMAIN-SUFFIX,redditstatus.com
