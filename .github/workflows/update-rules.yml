@@ -16,12 +16,12 @@ jobs:
   update:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v7
         with:
           python-version: "3.x"
       - name: Rebuild rule-set
-        run: python3 scripts/build-shadowrocket_rules.py
+        run: python3 scripts/build_shadowrocket_rules.py
       - name: Commit changes
         shell: bash
         run: |
