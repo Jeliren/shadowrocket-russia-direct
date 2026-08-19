@@ -1,5 +1,5 @@
 # Personal DIRECT overrides. One rule per line.
-# This file is deliberately small and is the normal place for urgent additions.
+# This file is the normal place for urgent additions and explicit user routes.
 
 # Reddit works from the user's ISP but fails through the current VPS/datacenter IP.
 DOMAIN-SUFFIX,reddit.com
@@ -10,3 +10,35 @@ DOMAIN-SUFFIX,redditmedia.com
 DOMAIN-SUFFIX,redditspace.com
 DOMAIN-SUFFIX,redditstatic.com
 DOMAIN-SUFFIX,redditstatus.com
+
+# Bitrix24 cloud, Network and Sites/Stores domains.
+DOMAIN-SUFFIX,bitrix24.ru
+DOMAIN-SUFFIX,bitrix24.com
+DOMAIN-SUFFIX,bitrix24.net
+DOMAIN-SUFFIX,bitrix24.de
+DOMAIN-SUFFIX,bitrix24.es
+DOMAIN-SUFFIX,bitrix24.com.br
+DOMAIN-SUFFIX,bitrix24.cn
+DOMAIN-SUFFIX,bitrix24.in
+DOMAIN-SUFFIX,bitrix24.eu
+DOMAIN-SUFFIX,bitrix24.fr
+DOMAIN-SUFFIX,bitrix24.it
+DOMAIN-SUFFIX,bitrix24.pl
+DOMAIN-SUFFIX,bitrix24.id
+DOMAIN-SUFFIX,bitrix24.com.tr
+DOMAIN-SUFFIX,bitrix24.jp
+DOMAIN-SUFFIX,bitrix24.vn
+DOMAIN-SUFFIX,bitrix24.site
+DOMAIN-SUFFIX,bitrix24.shop
+DOMAIN-SUFFIX,bitrix24site.com
+DOMAIN-SUFFIX,bitrix.info
+
+# Requested direct services.
+DOMAIN-SUFFIX,rick-i-morty.net
+DOMAIN-SUFFIX,vkusnoitochka.ru
+DOMAIN-SUFFIX,trip.com
+
+# Yandex services and shared infrastructure.
+DOMAIN-KEYWORD,yandex
+DOMAIN-SUFFIX,ya.ru
+DOMAIN-SUFFIX,yastatic.net
