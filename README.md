@@ -36,6 +36,19 @@ Background Update и системный iOS Background App Refresh. iOS не г�
 - `adblock.list` — OISD Small в формате Shadowrocket;
 - `direct-curated.list` — автоматически собираемый публичный набор.
 
+Это четыре разные политики, а не четыре копии одного списка. Ручные DIRECT-
+правила хранятся только в `direct-custom.list` и не подмешиваются в
+генерируемый `direct-curated.list`.
+
+Профили от 15 августа, в которых видны только `direct-custom.list`,
+`direct-curated.list` и `FINAL`, продолжают получать новые DIRECT-исключения
+по тем же URL. Чтобы такой профиль получил дополнительно блокировку рекламы и
+обратные PROXY-исключения, должен успешно обновиться сам `profile.conf`.
+
+Имена `profile.conf`, `proxy-custom.list`, `direct-custom.list`, `adblock.list`
+и `direct-curated.list` являются стабильным публичным контрактом: их нельзя
+переименовывать или удалять без сохранения совместимого URL.
+
 GitHub Actions ежедневно пересобирает агрегат из выбранных категорий
 `v2fly/domain-list-community` и
 `haritos90/allow-domains/Russia/russia-outside-surge.list`, официального
