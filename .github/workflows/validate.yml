@@ -1,0 +1,48 @@
+name: Validate published profile
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: read
+
+jobs:
+  repository:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v7
+        with:
+          python-version: "3.x"
+      - name: Validate profile and rule-sets
+        run: python3 scripts/validate_shadowrocket_repository.py
+
+  published-urls:
+    if: github.event_name == 'push'
+    needs: repository
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - name: Verify stable raw GitHub URLs
+        shell: bash
+        run: |
+          set -euo pipefail
+          base="https://raw.githubusercontent.com/Jeliren/shadowrocket-russia-direct/main"
+          for file in profile.conf proxy-custom.list direct-custom.list adblock.list direct-curated.list; do
+            published="$RUNNER_TEMP/$file"
+            for attempt in {1..12}; do
+              if curl -fsSL --max-time 30 "$base/$file?commit=$GITHUB_SHA" -o "$published" \
+                && cmp -s "$file" "$published"; then
+                echo "OK: $file"
+                break
+              fi
+              if [[ "$attempt" == 12 ]]; then
+                echo "Published file did not converge: $file" >&2
+                exit 1
+              fi
+              sleep 5
+            done
+          done
