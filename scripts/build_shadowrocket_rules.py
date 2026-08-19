@@ -228,6 +228,9 @@ def main() -> int:
         rules.update(parse_shadowrocket_list(download(url).decode("utf-8")))
     for url in config["external_domain_lists"]:
         rules.update(parse_domain_list(download(url).decode("utf-8")))
+    # Keep explicit user routes in the curated projection as a compatibility
+    # path for older profiles that refresh only direct-curated.list.
+    rules.update(parse_shadowrocket_list("\n".join(config.get("manual_direct_rules", []))))
     cbr_rules = parse_cbr_websites(
         download(config["cbr_websites_url"]).decode("utf-8")
     )

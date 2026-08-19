@@ -30,6 +30,30 @@
     "x5",
     "yandex"
   ],
+  "manual_direct_rules": [
+    "DOMAIN-SUFFIX,bitrix24.ru",
+    "DOMAIN-SUFFIX,bitrix24.com",
+    "DOMAIN-SUFFIX,bitrix24.net",
+    "DOMAIN-SUFFIX,bitrix24.de",
+    "DOMAIN-SUFFIX,bitrix24.es",
+    "DOMAIN-SUFFIX,bitrix24.com.br",
+    "DOMAIN-SUFFIX,bitrix24.cn",
+    "DOMAIN-SUFFIX,bitrix24.in",
+    "DOMAIN-SUFFIX,bitrix24.eu",
+    "DOMAIN-SUFFIX,bitrix24.fr",
+    "DOMAIN-SUFFIX,bitrix24.it",
+    "DOMAIN-SUFFIX,bitrix24.pl",
+    "DOMAIN-SUFFIX,bitrix24.id",
+    "DOMAIN-SUFFIX,bitrix24.com.tr",
+    "DOMAIN-SUFFIX,bitrix24.jp",
+    "DOMAIN-SUFFIX,bitrix24.vn",
+    "DOMAIN-SUFFIX,bitrix24.site",
+    "DOMAIN-SUFFIX,bitrix24.shop",
+    "DOMAIN-SUFFIX,bitrix24site.com",
+    "DOMAIN-SUFFIX,rick-i-morty.net",
+    "DOMAIN-SUFFIX,trip.com",
+    "DOMAIN-KEYWORD,yandex"
+  ],
   "external_shadowrocket_lists": [
     "https://raw.githubusercontent.com/haritos90/allow-domains/main/Russia/russia-outside-surge.list"
   ],
