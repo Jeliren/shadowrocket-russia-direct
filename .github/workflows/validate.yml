@@ -31,10 +31,19 @@ jobs:
         run: |
           set -euo pipefail
           base="https://raw.githubusercontent.com/Jeliren/shadowrocket-russia-direct/main"
-          for file in profile.conf proxy-custom.list direct-custom.list adblock.list direct-curated.list; do
+          files=(
+            profile.conf
+            proxy-custom.list
+            direct-custom.list
+            adblock.list
+            direct-curated.list
+            "profile.conf interval=60 strict=true"
+          )
+          for file in "${files[@]}"; do
             published="$RUNNER_TEMP/$file"
+            url_path="${file// /%20}"
             for attempt in {1..12}; do
-              if curl -fsSL --max-time 30 "$base/$file?commit=$GITHUB_SHA" -o "$published" \
+              if curl -fsSL --max-time 30 "$base/$url_path?commit=$GITHUB_SHA" -o "$published" \
                 && cmp -s "$file" "$published"; then
                 echo "OK: $file"
                 break

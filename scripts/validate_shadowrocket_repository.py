@@ -19,6 +19,7 @@ PUBLIC_BASE = (
     "Jeliren/shadowrocket-russia-direct/main"
 )
 PROFILE_PATH = RULE_DIR / "profile.conf"
+LEGACY_PROFILE_PATH = RULE_DIR / "profile.conf interval=60 strict=true"
 LIST_FILES = (
     "proxy-custom.list",
     "direct-custom.list",
@@ -54,11 +55,18 @@ def active_lines(path: Path) -> list[str]:
 
 def validate_profile() -> None:
     profile = PROFILE_PATH.read_text(encoding="utf-8")
-    expected_update = (
-        f"update-url = {PUBLIC_BASE}/profile.conf interval=60 strict=true"
-    )
+    expected_update = f"update-url = {PUBLIC_BASE}/profile.conf"
     if expected_update not in profile:
         raise ValueError("stable profile update-url changed or disappeared")
+    update_lines = [
+        line.strip()
+        for line in profile.splitlines()
+        if line.strip().startswith("update-url =")
+    ]
+    if update_lines != [expected_update]:
+        raise ValueError(f"invalid profile update-url: {update_lines!r}")
+    if LEGACY_PROFILE_PATH.read_bytes() != PROFILE_PATH.read_bytes():
+        raise ValueError("legacy malformed-URL bridge differs from profile.conf")
 
     rule_section = profile.split("[Rule]", 1)
     if len(rule_section) != 2:
