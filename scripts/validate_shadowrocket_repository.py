@@ -19,6 +19,7 @@ PUBLIC_BASE = (
     "Jeliren/shadowrocket-russia-direct/main"
 )
 PROFILE_PATH = RULE_DIR / "profile.conf"
+CHINA_PROFILE_PATH = RULE_DIR / "china.conf"
 LEGACY_PROFILE_PATH = RULE_DIR / "profile.conf interval=60 strict=true"
 LIST_FILES = (
     "proxy-custom.list",
@@ -31,6 +32,15 @@ EXPECTED_RULES = [
     f"RULE-SET,{PUBLIC_BASE}/direct-custom.list,DIRECT",
     f"RULE-SET,{PUBLIC_BASE}/adblock.list,REJECT",
     f"RULE-SET,{PUBLIC_BASE}/direct-curated.list,DIRECT",
+    "FINAL,PROXY",
+]
+CHINA_RULE_SOURCE = (
+    "https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/"
+    "rule/Shadowrocket/ChinaMax/ChinaMax.list"
+)
+EXPECTED_CHINA_RULES = [
+    f"RULE-SET,{CHINA_RULE_SOURCE},DIRECT",
+    "GEOIP,CN,DIRECT",
     "FINAL,PROXY",
 ]
 REQUIRED_MANUAL_RULES = {
@@ -83,6 +93,31 @@ def validate_profile() -> None:
         )
 
 
+def validate_china_profile() -> None:
+    profile = CHINA_PROFILE_PATH.read_text(encoding="utf-8")
+    expected_update = f"update-url = {PUBLIC_BASE}/china.conf"
+    update_lines = [
+        line.strip()
+        for line in profile.splitlines()
+        if line.strip().startswith("update-url =")
+    ]
+    if update_lines != [expected_update]:
+        raise ValueError(f"invalid China profile update-url: {update_lines!r}")
+
+    if "[Rule]" not in profile:
+        raise ValueError("china.conf has no [Rule] section")
+    actual_rules = [
+        line
+        for line in active_lines(CHINA_PROFILE_PATH)
+        if line.startswith("RULE-SET,") or line.startswith("GEOIP,") or line.startswith("FINAL,")
+    ]
+    if actual_rules != EXPECTED_CHINA_RULES:
+        raise ValueError(
+            "China profile rule order changed:\n"
+            f"expected={EXPECTED_CHINA_RULES!r}\nactual={actual_rules!r}"
+        )
+
+
 def validate_rule_set(filename: str) -> set[str]:
     path = RULE_DIR / filename
     if not path.is_file():
@@ -108,6 +143,7 @@ def validate_rule_set(filename: str) -> set[str]:
 
 def main() -> int:
     validate_profile()
+    validate_china_profile()
     rule_sets = {filename: validate_rule_set(filename) for filename in LIST_FILES}
 
     missing = REQUIRED_MANUAL_RULES - rule_sets["direct-custom.list"]
