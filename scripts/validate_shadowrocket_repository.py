@@ -19,6 +19,7 @@ PUBLIC_BASE = (
     "Jeliren/shadowrocket-russia-direct/main"
 )
 PROFILE_PATH = RULE_DIR / "profile.conf"
+NEXT_PROFILE_PATH = RULE_DIR / "profile-next.conf"
 CHINA_PROFILE_PATH = RULE_DIR / "china.conf"
 LEGACY_PROFILE_PATH = RULE_DIR / "profile.conf interval=60 strict=true"
 LIST_FILES = (
@@ -40,6 +41,26 @@ EXPECTED_RULES = [
     f"RULE-SET,{ITDOG_OUTSIDE_SOURCE},DIRECT",
     "FINAL,PROXY",
 ]
+# profile-next.conf is the one-device test of the next profile.conf.
+EXPECTED_NEXT_RULES = EXPECTED_RULES[:-1] + [
+    "GEOIP,RU,DIRECT,no-resolve",
+    "FINAL,PROXY",
+]
+REQUIRED_NEXT_GENERAL = {
+    "udp-policy-not-supported-behaviour": "REJECT",
+    "block-quic": "all-proxy",
+}
+# A misspelt key is silently ignored by Shadowrocket, so only known keys pass.
+KNOWN_GENERAL_KEYS = {
+    "block-quic",
+    "bypass-system",
+    "bypass-tun",
+    "dns-server",
+    "fallback-dns-server",
+    "skip-proxy",
+    "udp-policy-not-supported-behaviour",
+    "update-url",
+}
 CHINA_RULE_SOURCE = (
     "https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/"
     "rule/Shadowrocket/ChinaMax/ChinaMax.list"
@@ -175,6 +196,44 @@ def validate_profile() -> None:
         )
 
 
+def general_settings(path: Path) -> dict[str, str]:
+    text = path.read_text(encoding="utf-8")
+    general = text.split("[General]", 1)[1].split("[Rule]", 1)[0]
+    settings: dict[str, str] = {}
+    for line in general.splitlines():
+        line = line.strip()
+        if not line or line.startswith("#"):
+            continue
+        key, separator, value = line.partition(" = ")
+        if not separator or key not in KNOWN_GENERAL_KEYS:
+            raise ValueError(f"unknown or malformed [General] line in {path.name}: {line}")
+        settings[key] = value
+    return settings
+
+
+def validate_next_profile() -> None:
+    settings = general_settings(NEXT_PROFILE_PATH)
+    expected_update = f"{PUBLIC_BASE}/profile-next.conf"
+    if settings.get("update-url") != expected_update:
+        raise ValueError(f"invalid next profile update-url: {settings.get('update-url')!r}")
+    for key, value in REQUIRED_NEXT_GENERAL.items():
+        if settings.get(key) != value:
+            raise ValueError(f"profile-next.conf needs {key} = {value}")
+    if "bypass-system" in settings:
+        raise ValueError("profile-next.conf must not use deprecated bypass-system")
+
+    actual_rules = [
+        line
+        for line in active_lines(NEXT_PROFILE_PATH)
+        if line.startswith(("RULE-SET,", "GEOIP,", "FINAL,"))
+    ]
+    if actual_rules != EXPECTED_NEXT_RULES:
+        raise ValueError(
+            "next profile rule order changed:\n"
+            f"expected={EXPECTED_NEXT_RULES!r}\nactual={actual_rules!r}"
+        )
+
+
 def validate_china_profile() -> None:
     profile = CHINA_PROFILE_PATH.read_text(encoding="utf-8")
     expected_update = f"update-url = {PUBLIC_BASE}/china.conf"
@@ -259,7 +318,10 @@ def validate_direct_policy(direct: set[str], proxy: set[str]) -> None:
 
 def main() -> int:
     validate_profile()
+    general_settings(PROFILE_PATH)
+    validate_next_profile()
     validate_china_profile()
+    general_settings(CHINA_PROFILE_PATH)
     rule_sets = {filename: validate_rule_set(filename) for filename in LIST_FILES}
 
     missing = REQUIRED_MANUAL_RULES - rule_sets["direct-custom.list"]
