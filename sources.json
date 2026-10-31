@@ -1,39 +1,21 @@
 {
-  "schema_version": 1,
+  "schema_version": 2,
   "v2fly_categories": [
-    "category-gov-ru",
-    "category-bank-ru",
-    "category-ecommerce-ru",
-    "category-retail-ru",
-    "category-travel-ru",
-    "category-medicine-ru",
-    "category-education-ru",
-    "2gis",
-    "avito",
-    "autoru",
-    "cdek",
-    "cian",
-    "mailru-group",
-    "magnit",
-    "megafon",
-    "mosmetro",
-    "mts-ru",
-    "mvideo",
-    "ok",
-    "ozon",
-    "rostelecom",
-    "sber",
-    "t2-ru",
-    "tbank-ru",
-    "vk",
-    "wildberries",
-    "x5",
-    "yandex"
+    "category-ru"
   ],
-  "external_shadowrocket_lists": [
-    "https://raw.githubusercontent.com/haritos90/allow-domains/main/Russia/russia-outside-surge.list"
+  "v2fly_excluded_categories": [
+    "tld-ru",
+    "ucoz"
   ],
+  "excluded_rules": [
+    "DOMAIN-SUFFIX,ru.com",
+    "DOMAIN-SUFFIX,ru.net"
+  ],
+  "external_shadowrocket_lists": [],
   "external_domain_lists": [],
+  "referenced_rule_sets": [
+    "https://raw.githubusercontent.com/itdoginfo/allow-domains/main/Russia/outside-clashx.lst"
+  ],
   "cbr_websites_url": "https://www.cbr.ru/banking_sector/credit/cowebsites/",
   "oisd_small_url": "https://small.oisd.nl/"
 }
