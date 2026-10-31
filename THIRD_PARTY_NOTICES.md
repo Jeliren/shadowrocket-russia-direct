@@ -1,7 +1,7 @@
 # Third-party notices
 
 The generated `direct-curated.list` incorporates public website addresses from
-the Bank of Russia and domain data from the following MIT-licensed projects.
+the Bank of Russia and domain data from the following MIT-licensed project.
 
 ## Bank of Russia
 
@@ -13,11 +13,14 @@ Copyright (c) 2018-2019 V2Ray
 
 Source: https://github.com/v2fly/domain-list-community
 
-## haritos90/allow-domains
+Category: `category-ru` without the `tld-ru` and `ucoz` includes.
 
-Copyright (c) 2026 Alexander Kharitonov <haritos90@gmail.com>
+## Referenced, not redistributed
 
-Source: https://github.com/haritos90/allow-domains
+`profile.conf` references
+`https://raw.githubusercontent.com/itdoginfo/allow-domains/main/Russia/outside-clashx.lst`
+by URL. Its content is not copied into this repository because the upstream
+project publishes no licence.
 
 ## MIT License text
 

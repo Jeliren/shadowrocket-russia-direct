@@ -27,11 +27,17 @@ LIST_FILES = (
     "adblock.list",
     "direct-curated.list",
 )
+# Referenced, not copied: the upstream repository has no licence.
+ITDOG_OUTSIDE_SOURCE = (
+    "https://raw.githubusercontent.com/itdoginfo/allow-domains/main/"
+    "Russia/outside-clashx.lst"
+)
 EXPECTED_RULES = [
     f"RULE-SET,{PUBLIC_BASE}/proxy-custom.list,PROXY",
     f"RULE-SET,{PUBLIC_BASE}/direct-custom.list,DIRECT",
     f"RULE-SET,{PUBLIC_BASE}/adblock.list,REJECT",
     f"RULE-SET,{PUBLIC_BASE}/direct-curated.list,DIRECT",
+    f"RULE-SET,{ITDOG_OUTSIDE_SOURCE},DIRECT",
     "FINAL,PROXY",
 ]
 CHINA_RULE_SOURCE = (
@@ -51,6 +57,82 @@ REQUIRED_MANUAL_RULES = {
     "DOMAIN-KEYWORD,yandex",
     "DOMAIN-SUFFIX,ya.ru",
     "DOMAIN-SUFFIX,yastatic.net",
+    "DOMAIN-SUFFIX,aeroflot.ru",
+    "DOMAIN-SUFFIX,s7.ru",
+    "DOMAIN-SUFFIX,pobeda.aero",
+    "DOMAIN-SUFFIX,domclick.ru",
+    "DOMAIN-SUFFIX,lenta.ru",
+}
+REQUIRED_PROXY_RULES = {
+    "DOMAIN-SUFFIX,telegram.org",
+    "DOMAIN-SUFFIX,t.me",
+    "DOMAIN-SUFFIX,telegram.me",
+}
+# Blocked or geo-restricted for Russian users: no DIRECT rule may match them
+# or any of their subdomains.
+FORBIDDEN_DIRECT_DOMAINS = (
+    "telegram.org",
+    "t.me",
+    "telegram.me",
+    "youtube.com",
+    "googlevideo.com",
+    "instagram.com",
+    "facebook.com",
+    "whatsapp.com",
+    "whatsapp.net",
+    "x.com",
+    "twitter.com",
+    "discord.com",
+    "discordapp.com",
+    "openai.com",
+    "chatgpt.com",
+    "anthropic.com",
+    "claude.ai",
+    "linkedin.com",
+    "spotify.com",
+    "netflix.com",
+    "signal.org",
+    "viber.com",
+    "rutracker.org",
+    "torproject.org",
+)
+# Core Russian services that must stay DIRECT after every daily rebuild.
+REQUIRED_DIRECT_DOMAINS = (
+    "gosuslugi.ru",
+    "nalog.gov.ru",
+    "mos.ru",
+    "sberbank.ru",
+    "tbank.ru",
+    "vtb.ru",
+    "alfabank.ru",
+    "ozon.ru",
+    "wildberries.ru",
+    "avito.ru",
+    "yandex.ru",
+    "vk.com",
+    "mail.ru",
+    "rzd.ru",
+    "pochta.ru",
+    "2gis.ru",
+    "kinopoisk.ru",
+    "rutube.ru",
+    "hh.ru",
+    "cdek.ru",
+)
+MIN_RULES = {
+    "direct-curated.list": 1_500,
+    "adblock.list": 10_000,
+}
+KNOWN_IDN_TLDS = {
+    "xn--p1ai",
+    "xn--p1acf",
+    "xn--80adxhks",
+    "xn--d1acj3b",
+    "xn--80asehdb",
+    "xn--80aswg",
+    "xn--c1avg",
+    "xn--90ais",
+    "xn--80ao21a",
 }
 RULE_PATTERN = re.compile(r"^(DOMAIN|DOMAIN-SUFFIX|DOMAIN-KEYWORD),[^,\s]+$")
 
@@ -141,6 +223,40 @@ def validate_rule_set(filename: str) -> set[str]:
     return set(rules)
 
 
+def rule_matches(rule: str, domain: str) -> bool:
+    kind, value = rule.split(",", 1)
+    if kind == "DOMAIN":
+        return domain == value
+    if kind == "DOMAIN-SUFFIX":
+        return domain == value or domain.endswith(f".{value}")
+    return value in domain
+
+
+def validate_direct_policy(direct: set[str], proxy: set[str]) -> None:
+    for rule in sorted(direct):
+        kind, value = rule.split(",", 1)
+        for domain in FORBIDDEN_DIRECT_DOMAINS:
+            if rule_matches(rule, domain) or (
+                kind != "DOMAIN-KEYWORD" and value.endswith(f".{domain}")
+            ):
+                raise ValueError(f"blocked service {domain} is DIRECT via {rule}")
+        if kind != "DOMAIN-KEYWORD":
+            tld = value.rsplit(".", 1)[-1]
+            valid = (
+                tld in KNOWN_IDN_TLDS
+                if tld.startswith("xn--")
+                else re.fullmatch(r"[a-z]{2,63}", tld)
+            )
+            if not valid:
+                raise ValueError(f"invalid top-level domain in DIRECT rule: {rule}")
+
+    for domain in REQUIRED_DIRECT_DOMAINS:
+        if any(rule_matches(rule, domain) for rule in proxy):
+            raise ValueError(f"required DIRECT service {domain} is forced to PROXY")
+        if not any(rule_matches(rule, domain) for rule in direct):
+            raise ValueError(f"required DIRECT service {domain} lost its rule")
+
+
 def main() -> int:
     validate_profile()
     validate_china_profile()
@@ -149,6 +265,18 @@ def main() -> int:
     missing = REQUIRED_MANUAL_RULES - rule_sets["direct-custom.list"]
     if missing:
         raise ValueError(f"required manual DIRECT rules are missing: {sorted(missing)}")
+    missing = REQUIRED_PROXY_RULES - rule_sets["proxy-custom.list"]
+    if missing:
+        raise ValueError(f"required PROXY rules are missing: {sorted(missing)}")
+    for filename, minimum in MIN_RULES.items():
+        if len(rule_sets[filename]) < minimum:
+            raise ValueError(
+                f"{filename} has only {len(rule_sets[filename])} rules (< {minimum})"
+            )
+    validate_direct_policy(
+        rule_sets["direct-custom.list"] | rule_sets["direct-curated.list"],
+        rule_sets["proxy-custom.list"],
+    )
 
     sources = json.loads((RULE_DIR / "sources.json").read_text(encoding="utf-8"))
     if "manual_direct_rules" in sources:

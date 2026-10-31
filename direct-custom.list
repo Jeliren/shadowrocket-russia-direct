@@ -42,3 +42,10 @@ DOMAIN-SUFFIX,trip.com
 DOMAIN-KEYWORD,yandex
 DOMAIN-SUFFIX,ya.ru
 DOMAIN-SUFFIX,yastatic.net
+
+# Russian airlines, Domclick and Lenta.ru: missing from community sources.
+DOMAIN-SUFFIX,aeroflot.ru
+DOMAIN-SUFFIX,s7.ru
+DOMAIN-SUFFIX,pobeda.aero
+DOMAIN-SUFFIX,domclick.ru
+DOMAIN-SUFFIX,lenta.ru

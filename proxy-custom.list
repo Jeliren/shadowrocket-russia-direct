@@ -1,3 +1,14 @@
 # Personal PROXY overrides. One rule per line.
 # This list has the highest routing priority and is updated centrally.
 # Add a domain here when it must use VPN despite appearing in a DIRECT source.
+
+# Telegram must use VPN even if a DIRECT source lists one of its hosts.
+DOMAIN-SUFFIX,telegram.org
+DOMAIN-SUFFIX,t.me
+DOMAIN-SUFFIX,telegram.me
+DOMAIN-SUFFIX,telesco.pe
+DOMAIN-SUFFIX,telegra.ph
+DOMAIN-SUFFIX,cdn-telegram.org
+
+# IP checker from the itdoginfo DIRECT list: show the VPN address, not home.
+DOMAIN-SUFFIX,showip.net
